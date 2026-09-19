@@ -16,7 +16,8 @@ from config.config import DB_CONFIG
 def run_sql_file(cursor, path):
     with open(path, "r", encoding="utf-8") as f:
         lines = f.readlines()
-   
+    # Strip full-line comments first so they can't get glued onto a real
+    # statement when the file is split into individual statements below.
     cleaned = [line for line in lines if not line.strip().startswith("--")]
     sql = "".join(cleaned)
     statements = [s.strip() for s in sql.split(";") if s.strip()]
@@ -25,7 +26,8 @@ def run_sql_file(cursor, path):
 
 
 def main():
-    
+    # Deliberately not passing "database" yet - schema.sql creates it itself
+    # with CREATE DATABASE IF NOT EXISTS.
     conn = mysql.connector.connect(
         host=DB_CONFIG["host"],
         port=DB_CONFIG["port"],

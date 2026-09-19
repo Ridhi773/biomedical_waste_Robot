@@ -27,12 +27,22 @@ class LoginWindow(tk.Tk):
         self.admin_dao = AdminDAO()
         self.authenticated = False
 
+        try:
+            self.logo_img = tk.PhotoImage(file="assets/images/logo.png")
+        except tk.TclError:
+            self.logo_img = None   # missing/unreadable file - app still runs without it
+
         self._build()
 
     def _build(self):
+        if self.logo_img is not None:
+            tk.Label(self, image=self.logo_img, bg="#f4f6f8").place(
+                relx=1.0, y=12, x=-12, anchor="ne"
+            )
+
         tk.Label(
             self, text="Biomedical Waste Robot",
-            font=("Segoe UI", 16, "bold"), bg="#f4f6f8", fg="#1b3a4b",
+            font=("Segoe UI", 16, "bold"), bg="#f4f6f8", fg="#0f2d46",
         ).pack(pady=(30, 4))
         tk.Label(
             self, text="Admin Login", font=("Segoe UI", 11), bg="#f4f6f8", fg="#555",
@@ -51,7 +61,7 @@ class LoginWindow(tk.Tk):
 
         tk.Button(
             self, text="Login", command=self._attempt_login,
-            bg="#2f7a63", fg="white", relief="flat", width=18, height=1,
+            bg="#1a7f8c", fg="white", relief="flat", width=18, height=1,
         ).pack(pady=20)
         self.bind("<Return>", lambda e: self._attempt_login())
 
@@ -63,7 +73,7 @@ class LoginWindow(tk.Tk):
         ).pack()
         tk.Button(
             self, text="Submit a Complaint", command=self._open_complaint_form,
-            bg="#3a6ea5", fg="white", relief="flat", width=22,
+            bg="#3fae5c", fg="white", relief="flat", width=22,
         ).pack(pady=12)
 
     def _attempt_login(self):
@@ -128,7 +138,7 @@ class ComplaintFormWindow(tk.Toplevel):
 
         tk.Button(
             self, text="Submit Complaint", command=self._submit,
-            bg="#2f7a63", fg="white", relief="flat", width=18,
+            bg="#1a7f8c", fg="white", relief="flat", width=18,
         ).pack(pady=10)
 
     def _submit(self):
