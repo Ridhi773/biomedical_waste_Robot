@@ -2,6 +2,7 @@
 
 from dao.transport_dao import TransportDAO
 from dao.qr_verification_dao import QRVerificationDAO
+from dao.driver_dao import DriverDAO
 from services.compartment_service import CompartmentService
 
 
@@ -10,6 +11,7 @@ class DisposalService:
     def __init__(self):
         self.transport_dao = TransportDAO()
         self.qr_verification_dao = QRVerificationDAO()
+        self.driver_dao = DriverDAO()
         self.compartment_service = CompartmentService()
 
     def confirm_disposal(self, transport_id):
@@ -32,4 +34,7 @@ class DisposalService:
 
         self.transport_dao.complete(transport_id)
         self.compartment_service.empty_compartment(transport.compartment_id)
+        if transport.driver_id is not None:
+                self.driver_dao.update_status(transport.driver_id, "available")
+
         return True, "Disposal confirmed - compartment reset and ready for reuse."
