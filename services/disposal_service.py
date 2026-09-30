@@ -34,7 +34,10 @@ class DisposalService:
 
         self.transport_dao.complete(transport_id)
         self.compartment_service.empty_compartment(transport.compartment_id)
+
+        # Free the driver back up now that this run is done, so they show up
+        # again in Transport Requests' "available drivers" dropdown.
         if transport.driver_id is not None:
-                self.driver_dao.update_status(transport.driver_id, "available")
+            self.driver_dao.update_status(transport.driver_id, "available")
 
         return True, "Disposal confirmed - compartment reset and ready for reuse."

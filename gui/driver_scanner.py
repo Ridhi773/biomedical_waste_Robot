@@ -9,6 +9,8 @@ from tkinter import ttk, messagebox
 
 from services.transport_service import TransportService
 from services.qr_service import QRService
+from dao.compartment_dao import CompartmentDAO
+from utils.qr_utils import generate_qr_photoimage
 
 
 class DriverScannerWindow(tk.Toplevel):
@@ -16,7 +18,7 @@ class DriverScannerWindow(tk.Toplevel):
     def __init__(self, master, on_change=None):
         super().__init__(master)
         self.title("Driver Scanner - Pickup QR")
-        self.geometry("460x360")
+        self.geometry("460x560")
         self.on_change = on_change
 
         self.transport_service = TransportService()
@@ -41,6 +43,9 @@ class DriverScannerWindow(tk.Toplevel):
 
         self.expected_label = tk.Label(form, text="", fg="#555")
         self.expected_label.grid(row=1, column=0, columnspan=2, sticky="w", pady=(0, 6))
+
+        self.qr_image_label = tk.Label(self, bg="white")
+        self.qr_image_label.pack(pady=(0, 10))
 
         tk.Label(form, text="Scanned code:").grid(row=2, column=0, sticky="w", pady=6)
         self.scanned_var = tk.StringVar()
@@ -76,18 +81,25 @@ class DriverScannerWindow(tk.Toplevel):
         idx = self.transport_combo.current()
         if idx < 0:
             return
-        # NOTE: showing the expected code here is for demo transparency only -
-        # a real scanner wouldn't reveal this to the driver ahead of time.
-        from dao.compartment_dao import CompartmentDAO
+        # NOTE: showing the expected code/QR here is for demo transparency
+        # only - a real scanner wouldn't reveal this to the driver ahead of time.
         transport = self.transports[idx]
         compartment = CompartmentDAO().get_by_id(transport.compartment_id)
         self.expected_label.config(text=f"(Demo hint) Bin QR code: {compartment.qr_code}")
+
+        self.qr_photo = generate_qr_photoimage(compartment.qr_code)
+        if self.qr_photo is not None:
+            self.qr_image_label.config(image=self.qr_photo)
+        else:
+            self.qr_image_label.config(
+                image="", text="(install 'qrcode' and 'pillow' to show a QR image here)",
+                fg="#999",
+            )
 
     def _fill_correct(self):
         idx = self.transport_combo.current()
         if idx < 0:
             return
-        from dao.compartment_dao import CompartmentDAO
         transport = self.transports[idx]
         compartment = CompartmentDAO().get_by_id(transport.compartment_id)
         self.scanned_var.set(compartment.qr_code)

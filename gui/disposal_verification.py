@@ -11,6 +11,7 @@ from services.transport_service import TransportService
 from services.qr_service import QRService
 from services.disposal_service import DisposalService
 from dao.destination_dao import DestinationDAO
+from utils.qr_utils import generate_qr_photoimage
 
 
 class DisposalVerificationWindow(tk.Toplevel):
@@ -18,7 +19,7 @@ class DisposalVerificationWindow(tk.Toplevel):
     def __init__(self, master, on_change=None):
         super().__init__(master)
         self.title("Disposal Verification - Destination QR")
-        self.geometry("480x420")
+        self.geometry("480x600")
         self.on_change = on_change
 
         self.transport_service = TransportService()
@@ -50,6 +51,9 @@ class DisposalVerificationWindow(tk.Toplevel):
 
         self.expected_label = tk.Label(form, text="", fg="#555")
         self.expected_label.grid(row=2, column=0, columnspan=2, sticky="w", pady=(0, 6))
+
+        self.qr_image_label = tk.Label(self, bg="white")
+        self.qr_image_label.pack(pady=(0, 10))
 
         tk.Label(form, text="Scanned code:").grid(row=3, column=0, sticky="w", pady=6)
         self.scanned_var = tk.StringVar()
@@ -94,6 +98,15 @@ class DisposalVerificationWindow(tk.Toplevel):
         destination = self.destinations[idx]
         # NOTE: shown for demo transparency only - a real scan wouldn't reveal this.
         self.expected_label.config(text=f"(Demo hint) Destination QR code: {destination.qr_code}")
+
+        self.qr_photo = generate_qr_photoimage(destination.qr_code)
+        if self.qr_photo is not None:
+            self.qr_image_label.config(image=self.qr_photo)
+        else:
+            self.qr_image_label.config(
+                image="", text="(install 'qrcode' and 'pillow' to show a QR image here)",
+                fg="#999",
+            )
 
     def _fill_correct(self):
         idx = self.destination_combo.current()

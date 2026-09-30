@@ -20,9 +20,13 @@ class LoginWindow(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Biomedical Waste Robot - Admin Login")
-        self.geometry("420x420")
+        self.geometry("900x700")
         self.configure(bg="#f4f6f8")
-        self.resizable(False, False)
+        try:
+            self.state("zoomed")   # opens maximized on Windows
+        except tk.TclError:
+            pass
+        self.resizable(True, True)
 
         self.admin_dao = AdminDAO()
         self.authenticated = False
@@ -40,15 +44,20 @@ class LoginWindow(tk.Tk):
                 relx=1.0, y=12, x=-12, anchor="ne"
             )
 
+        # Everything below goes inside `card` instead of directly onto self,
+        # so the whole login box can be centered as one unit.
+        card = tk.Frame(self, bg="#f4f6f8")
+        card.place(relx=0.5, rely=0.5, anchor="center")
+
         tk.Label(
-            self, text="Biomedical Waste Robot",
+            card, text="Biomedical Waste Robot",
             font=("Segoe UI", 16, "bold"), bg="#f4f6f8", fg="#0f2d46",
-        ).pack(pady=(30, 4))
+        ).pack(pady=(0, 4))
         tk.Label(
-            self, text="Admin Login", font=("Segoe UI", 11), bg="#f4f6f8", fg="#555",
+            card, text="Admin Login", font=("Segoe UI", 11), bg="#f4f6f8", fg="#555",
         ).pack(pady=(0, 20))
 
-        form = tk.Frame(self, bg="#f4f6f8")
+        form = tk.Frame(card, bg="#f4f6f8")
         form.pack()
 
         tk.Label(form, text="Username", bg="#f4f6f8").grid(row=0, column=0, sticky="w", pady=6)
@@ -60,19 +69,19 @@ class LoginWindow(tk.Tk):
         tk.Entry(form, textvariable=self.password_var, show="*", width=26).grid(row=1, column=1, pady=6)
 
         tk.Button(
-            self, text="Login", command=self._attempt_login,
+            card, text="Login", command=self._attempt_login,
             bg="#1a7f8c", fg="white", relief="flat", width=18, height=1,
         ).pack(pady=20)
         self.bind("<Return>", lambda e: self._attempt_login())
 
-        ttk.Separator(self, orient="horizontal").pack(fill="x", padx=30, pady=10)
+        ttk.Separator(card, orient="horizontal").pack(fill="x", pady=10)
 
         tk.Label(
-            self, text="Not an admin? You can still report a problem:",
+            card, text="Not an admin? You can still report a problem:",
             bg="#f4f6f8", fg="#555", font=("Segoe UI", 9),
         ).pack()
         tk.Button(
-            self, text="Submit a Complaint", command=self._open_complaint_form,
+            card, text="Submit a Complaint", command=self._open_complaint_form,
             bg="#3fae5c", fg="white", relief="flat", width=22,
         ).pack(pady=12)
 
