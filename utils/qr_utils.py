@@ -1,7 +1,5 @@
 """
-QR-code helpers. There's no physical scanner here, so "scanning" in the GUI
-means the driver picks/enters a code that gets compared to the expected one
-stored against the compartment or destination - this module generates those
+ this module generates those
 codes, renders them as real scannable QR images, and does the comparison.
 """
 

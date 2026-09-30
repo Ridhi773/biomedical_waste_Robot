@@ -1,9 +1,5 @@
 """
-Main application window. Shows an at-a-glance summary and tabbed navigation
-to each of the other screens, opened in its own Toplevel window. Only
-reachable after a successful admin login (see gui/login.py + main.py).
-
-Color palette is pulled from the project logo (navy -> teal -> green).
+Main application window. 
 """
 
 import tkinter as tk
